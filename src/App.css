@@ -1,0 +1,60 @@
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+.platform-role-shell { min-height:inherit; --role-accent-soft:rgba(15,118,110,.1); }
+.platform-role-shell.role-community { --accent:#16805b; --accent-2:#0f6045; --gradient-primary:#16805b; --role-accent-soft:rgba(22,128,91,.1); --shadow-glow:0 3px 12px rgba(22,128,91,.16); }
+.platform-role-shell.role-admin { --accent:#2563a6; --accent-2:#1d4f85; --gradient-primary:#2563a6; --role-accent-soft:rgba(37,99,166,.1); --shadow-glow:0 3px 12px rgba(37,99,166,.16); }
+.platform-role-shell.role-user, .platform-role-shell.role-guest { --accent:#0f766e; --accent-2:#115e59; --gradient-primary:#0f766e; }
+.app-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 24px;
+}
+
+.app-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(250, 204, 21, .18);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: sijaka-spin .8s linear infinite;
+}
+
+@keyframes sijaka-spin { to { transform: rotate(360deg); } }
+
+.app-crash { min-height:100vh; min-height:100dvh; display:grid; place-items:center; padding:24px; background:var(--bg-primary); }
+.app-crash-card { width:min(100%, 440px); padding:32px 24px; text-align:center; background:var(--bg-card); border:1px solid var(--border-color); border-radius:20px; box-shadow:var(--shadow-card); }
+.app-crash-logo { width:64px; height:64px; margin:0 auto 18px; border-radius:14px; object-fit:contain; }
+.app-crash-card h1 { margin:0 0 8px; font-size:clamp(20px,6vw,28px); }
+.app-crash-card p { margin:0 0 20px; color:var(--text-secondary); }
+.app-crash-card button { width:100%; min-height:48px; border:0; border-radius:12px; background:var(--gradient-primary); color:#fff; font-weight:800; cursor:pointer; }
+
+.platform-status { position:fixed; top:0; left:50%; z-index:2000; width:min(calc(100% - 24px), 520px); padding:8px 14px; transform:translateX(-50%); border:1px solid rgba(245,158,11,.5); border-top:0; border-radius:0 0 10px 10px; background:#3a2505; color:#fde68a; font-size:12px; font-weight:700; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,.2); }
+.platform-status-error { top:42px; border-color:rgba(239,68,68,.55); background:#3b1111; color:#fecaca; }
+.platform-status button { margin-left:8px; min-height:28px; padding:3px 8px; border:1px solid currentColor; border-radius:6px; background:transparent; color:inherit; font:inherit; cursor:pointer; }
+
+.sijaka-toast { position:fixed; top:max(76px, calc(env(safe-area-inset-top) + 64px)); right:max(16px, env(safe-area-inset-right)); z-index:2100; width:min(calc(100% - 32px), 360px); display:flex; align-items:flex-start; gap:10px; padding:13px 12px; border:1px solid rgba(15,118,110,.28); border-left:4px solid var(--accent); border-radius:14px; background:rgba(255,255,255,.97); color:var(--text-primary); box-shadow:0 14px 34px rgba(23,48,66,.18); animation:sijaka-toast-in .28s ease-out both; }
+.sijaka-toast-mark { display:grid; place-items:center; flex:0 0 24px; width:24px; height:24px; border-radius:50%; background:rgba(22,114,79,.12); color:var(--text-success); font-weight:900; }
+.sijaka-toast-copy { display:grid; gap:3px; min-width:0; flex:1; }.sijaka-toast-copy strong { font-size:12px; }.sijaka-toast-copy span { color:var(--text-secondary); font-size:11px; line-height:1.4; }.sijaka-toast button { display:grid; place-items:center; flex:0 0 26px; width:26px; height:26px; min-width:26px; min-height:26px; aspect-ratio:1; box-sizing:border-box; padding:0; border:0; border-radius:50%; background:var(--bg-secondary); color:var(--text-secondary); font-size:18px; line-height:1; cursor:pointer; }
+@keyframes sijaka-toast-in { from { opacity:0; transform:translateY(-12px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+.dashboard-content, .hm-content, .rf-content, .pf-content, .my-reports-content, .about-content, .ad-content, .settings-content, .auth-card { animation:sijaka-page-in .42s ease-out both; }
+.dashboard-action-card, .hm-filter-drawer, .hm-location-search, .hm-status-legend, .rf-panel, .pf-panel, .my-report-card, .about-member, .about-principle, .ad-card, .settings-section { animation:sijaka-item-in .42s ease-out both; }
+.dashboard-action-card:nth-child(2), .rf-panel:nth-child(2), .pf-panel:nth-child(3), .about-member:nth-child(2), .about-principle:nth-child(2), .settings-section:nth-of-type(2) { animation-delay:.06s; }
+.dashboard-action-card:nth-child(3), .rf-panel:nth-child(3), .pf-panel:nth-child(4), .about-member:nth-child(3), .about-principle:nth-child(3), .settings-section:nth-of-type(3) { animation-delay:.12s; }
+@keyframes sijaka-page-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes sijaka-item-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+html[data-reduce-motion='true'] .sijaka-toast, html[data-reduce-motion='true'] .dashboard-content, html[data-reduce-motion='true'] .hm-content, html[data-reduce-motion='true'] .rf-content, html[data-reduce-motion='true'] .pf-content, html[data-reduce-motion='true'] .my-reports-content, html[data-reduce-motion='true'] .about-content, html[data-reduce-motion='true'] .ad-content, html[data-reduce-motion='true'] .settings-content, html[data-reduce-motion='true'] .auth-card, html[data-reduce-motion='true'] .dashboard-action-card, html[data-reduce-motion='true'] .hm-filter-drawer, html[data-reduce-motion='true'] .hm-location-search, html[data-reduce-motion='true'] .hm-status-legend, html[data-reduce-motion='true'] .rf-panel, html[data-reduce-motion='true'] .pf-panel, html[data-reduce-motion='true'] .my-report-card, html[data-reduce-motion='true'] .about-member, html[data-reduce-motion='true'] .about-principle, html[data-reduce-motion='true'] .ad-card, html[data-reduce-motion='true'] .settings-section { animation:none; }
+@media (max-width:720px) { .sijaka-toast { top:max(66px, calc(env(safe-area-inset-top) + 56px)); right:12px; width:calc(100% - 24px); } }

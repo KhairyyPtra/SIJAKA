@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "SIJAKA — Sistem Informasi Jalan Kota",
+  "short_name": "SIJAKA",
+  "description": "Platform pelaporan dan pemantauan kondisi jalan di kota.",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "start_url": "/dashboard",
+  "id": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "natural",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#f4f7f8",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
