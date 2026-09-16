@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     try {
       const { data: reportData, error } = await supabase
         .from('reports')
-        .select('*')
+        .select('id, user_id, reporter_name, reporter_email, reporter_avatar_url, damage_type, latitude, longitude, description, status, created_at, updated_at, photo_url, completion_photo_url, completed_at, verified_by, verified_by_name, verified_by_avatar_url, verified_by_role, verified_at, repairer_id, repairer_name, repairer_avatar_url, repairer_role, repair_started_at, government_intervened_at, hidden_from_map, hidden_at, hidden_reason, hidden_by, takeover_status, takeover_requested_by, takeover_requested_by_name, takeover_requested_at, takeover_reason, takeover_responded_by, takeover_responded_at')
         .order('created_at', { ascending: false })
 
       if (error || !reportData) {
@@ -102,9 +102,13 @@ export default function AdminDashboard() {
       }
 
       const visible = reportData.filter((report) => isWithinRetention(report) && !report.hidden_from_map)
-      const { data: voteRows, error: voteError } = await supabase
-        .from('report_votes')
-        .select('report_id, user_id')
+      const visibleReportIds = visible.map((report) => report.id).filter(Boolean)
+      const { data: voteRows, error: voteError } = visibleReportIds.length
+        ? await supabase
+          .from('report_votes')
+          .select('report_id, user_id')
+          .in('report_id', visibleReportIds)
+        : { data: [], error: null }
 
       let confirmations = {}
       let voteUserIds = []
