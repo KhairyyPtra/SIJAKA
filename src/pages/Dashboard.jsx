@@ -148,7 +148,7 @@ export default function Dashboard() {
     : role === 'community'
       ? {
           kicker: 'RUANG KERJA RELAWAN',
-          title: 'Selamat datang, Admin !',
+          title: 'Selamat datang, Relawan !',
           description: 'Pilih temuan warga yang dapat Anda bantu, kerjakan bersama komunitas, dan laporkan hasilnya.',
           panelTitle: 'Mulai kerja relawan',
           panelDescription: 'Buka panel relawan untuk memvalidasi temuan dan menangani perbaikan jalan.',

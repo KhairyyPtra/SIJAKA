@@ -213,7 +213,7 @@ export default function Navbar() {
   }
   const isStaff = ['admin', 'community'].includes(role)
   const roleLinks = isStaff
-    ? baseLinks.filter((link) => !['/profile'].includes(link.path))
+    ? baseLinks.filter((link) => !['/profile', '/my-reports'].includes(link.path))
     : baseLinks.filter((link) => link.path !== '/profile')
   const guestLinks = roleLinks.map((link) => {
     if (!user && link.path === '/my-reports') {
