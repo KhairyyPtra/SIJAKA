@@ -85,4 +85,4 @@ npm run preview
 
 Kontribusi dipersilakan melalui pull request. Sebelum mengirim perubahan, jalankan `npm run lint` dan `npm run build`.
 
-Source code menggunakan [Apache License 2.0](LICENSE). Nama dan logo SIJAKA tidak otomatis dilisensikan oleh lisensi source code.
+Source code menggunakan [Apache License 2.0](LICENSE).
