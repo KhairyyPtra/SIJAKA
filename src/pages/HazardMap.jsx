@@ -1112,15 +1112,6 @@ export default function HazardMap() {
             <h1>{mapCopy.title}</h1>
 
             <p>{mapCopy.description}</p>
-
-            <button
-              type="button"
-              className="hm-scroll-map-button"
-              onClick={() => document.getElementById('hm-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            >
-              <span aria-hidden="true">↓</span>
-              Ke peta
-            </button>
           </div>
 
           <div
@@ -1132,6 +1123,16 @@ export default function HazardMap() {
               alt=""
             />
           </div>
+
+          <button
+            type="button"
+            className="hm-scroll-map-button"
+            onClick={() => document.getElementById('hm-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            aria-label="Gulir ke peta"
+            title="Gulir ke peta"
+          >
+            <span aria-hidden="true">↓</span>
+          </button>
         </section>
 
         {}
