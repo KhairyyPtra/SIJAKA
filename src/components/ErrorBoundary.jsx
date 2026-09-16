@@ -12,8 +12,9 @@ export default class ErrorBoundary extends Component {
     if (!this.isChunkLoadError(error)) return
 
     const recoveryKey = 'sijaka-chunk-recovery'
-    if (sessionStorage.getItem(recoveryKey)) return
-    sessionStorage.setItem(recoveryKey, 'true')
+    const lastRecovery = Number(sessionStorage.getItem(recoveryKey) || 0)
+    if (Date.now() - lastRecovery < 30000) return
+    sessionStorage.setItem(recoveryKey, String(Date.now()))
 
     Promise.all([
       navigator.serviceWorker?.getRegistrations().then((registrations) => (

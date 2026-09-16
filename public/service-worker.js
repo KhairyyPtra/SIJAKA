@@ -1,4 +1,4 @@
-const VERSION = 'sijaka-v12'
+const VERSION = 'sijaka-v13'
 const STATIC_CACHE = `${VERSION}-static`
 const RUNTIME_CACHE = `${VERSION}-runtime`
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/logo-sijaka.png']
