@@ -104,3 +104,4 @@
 @media (prefers-reduced-motion:reduce) { .navbar-link { transition:none; } .app-loading-spinner { animation:none; } }
 
 html[data-theme='dark'] .mobile-nav-link.active { background:#263c3c; color:#8de1d6; }
+html[data-theme='dark'] .navbar-inbox-button img { filter:brightness(0) invert(1); }
