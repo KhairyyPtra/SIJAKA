@@ -138,7 +138,7 @@ export default function Dashboard() {
   const roleContent = role === 'admin'
     ? {
         kicker: 'PUSAT KENDALI INSTANSI',
-        title: 'Selamat datang, Admin !',
+        title: 'Selamat datang, Admin',
         description: 'Tinjau laporan warga, tetapkan penanganan, dan pantau penyelesaian pekerjaan secara terukur.',
         panelTitle: 'Kelola laporan warga',
         panelDescription: 'Buka panel instansi untuk memverifikasi, mengatur status, dan mengoordinasikan perbaikan.',
@@ -148,7 +148,7 @@ export default function Dashboard() {
     : role === 'community'
       ? {
           kicker: 'RUANG KERJA RELAWAN',
-          title: 'Selamat datang, Relawan !',
+          title: 'Selamat datang, Relawan',
           description: 'Pilih temuan warga yang dapat Anda bantu, kerjakan bersama komunitas, dan laporkan hasilnya.',
           panelTitle: 'Mulai kerja relawan',
           panelDescription: 'Buka panel relawan untuk memvalidasi temuan dan menangani perbaikan jalan.',
@@ -191,38 +191,17 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page">
-
-      {}
-
       <Navbar />
-
       <main className="dashboard-content">
-
-        {}
-
         <section className="dashboard-hero">
-
           <div className="dashboard-hero-copy">
-
             <span className="dashboard-kicker">{roleContent.kicker}</span>
-
             <h1>{roleContent.title}</h1>
-
             <p>{roleContent.description}</p>
-
           </div>
-
         </section>
-
-        {}
-
-        <section
-          className="dashboard-actions"
-          aria-label="Aksi utama"
-        >
-
+        <section className="dashboard-actions" aria-label="Aksi utama">
           {menuItems.map((item) => {
-
             const content = (
               <>
                 <div className="action-icon">
@@ -233,52 +212,24 @@ export default function Dashboard() {
                 </div>
 
                 <div className="action-copy">
-
-                  <h2>
-                    {item.title}
-                  </h2>
-
-                  <p>
-                    {item.desc}
-                  </p>
-
+                  <h2>{item.title}</h2>
+                  <p>{item.desc}</p>
                 </div>
-
-                <span
-                  className="action-arrow"
-                  aria-hidden="true"
-                >
-                  →
-                </span>
+                <span className="action-arrow" aria-hidden="true">→</span>
               </>
             )
-
-            
-
-            if (
-              item.requiresLogin &&
-              !user
-            ) {
+            if (item.requiresLogin && !user) {
               return (
                 <button
                   type="button"
                   key={item.to}
                   className={`dashboard-action-card ${item.tone}`}
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new Event(
-                        'sijaka:guest-report'
-                      )
-                    )
-                  }
+                  onClick={() => window.dispatchEvent(new Event('sijaka:guest-report'))}
                 >
                   {content}
                 </button>
               )
             }
-
-            
-
             return (
               <Link
                 to={item.to}
@@ -325,8 +276,6 @@ export default function Dashboard() {
             )}
           </div>
         </section>
-
-        {}
 
         {!['admin', 'community'].includes(role) && (
         <section className="how-section">
