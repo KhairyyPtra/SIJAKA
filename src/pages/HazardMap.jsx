@@ -1124,15 +1124,6 @@ export default function HazardMap() {
             />
           </div>
 
-          <button
-            type="button"
-            className="hm-scroll-map-button"
-            onClick={() => document.getElementById('hm-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            aria-label="Gulir ke peta"
-            title="Gulir ke peta"
-          >
-            <span aria-hidden="true">↓</span>
-          </button>
         </section>
 
         {}

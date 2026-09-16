@@ -9,9 +9,6 @@
 .hm-kicker { display:block; color:var(--accent); font-size:11px; font-weight:850; letter-spacing:.16em; text-transform:uppercase; margin-bottom:7px; }
 .hm-hero h1 { margin:0 0 8px; font-size:var(--page-title-size); line-height:1.1; letter-spacing:0; }
 .hm-hero p { margin:0; color:var(--text-secondary); font-size:13px; line-height:1.6; max-width:520px; }
-.hm-scroll-map-button { position:absolute; z-index:3; right:30px; bottom:24px; display:grid; place-items:center; width:54px; height:54px; min-height:54px; padding:0; border:2px solid rgba(250,204,21,.5); border-radius:50%; background:rgba(250,204,21,.14); color:var(--accent); font:inherit; font-size:25px; font-weight:900; line-height:1; cursor:pointer; box-shadow:0 4px 12px rgba(23,48,66,.16); transition:var(--transition); }
-.hm-scroll-map-button:hover { background:rgba(250,204,21,.18); border-color:var(--accent); }
-.hm-scroll-map-button span { line-height:1; }
 .hm-hero-icon { position:relative; z-index:1; flex:0 0 58px; width:58px; height:58px; display:grid; place-items:center; border-radius:17px; background:rgba(250,204,21,.1); border:1px solid rgba(250,204,21,.35); box-shadow:0 0 28px rgba(250,204,21,.12); }
 .hm-hero-icon img { width:32px; height:32px; object-fit:contain; }
 
@@ -152,7 +149,6 @@
 @media (max-width:800px) {
   .hm-content { padding:18px 16px 32px; }
   .hm-hero { min-height:132px; padding:18px 20px; border-radius:20px; }
-  .hm-scroll-map-button { right:14px; bottom:14px; width:52px; height:52px; min-height:52px; }
   .hm-hero-icon { display:none; }
 }
 
@@ -178,7 +174,7 @@
   .hm-chip, .hm-chip-mine { width:100%; min-width:0; margin-left:0; padding:9px 10px; font-size:12px; border-radius:12px; }
   .hm-chip:first-child { grid-column:1 / -1; }
   .hm-chip-icon { width:16px; height:16px; flex-basis:16px; }
-  .hm-map-shell { border-radius:18px; min-height:calc(100dvh - 340px); }
+  .hm-map-shell { margin-inline:4px; padding:8px; border-radius:18px; min-height:calc(100dvh - 340px); margin-bottom:max(12px, env(safe-area-inset-bottom)); }
   .hm-locate-btn { right:10px; top:10px; width:42px; height:42px; min-height:42px; font-size:18px; }
   .hm-map-shell .leaflet-popup-content-wrapper { max-width:226px; border-radius:11px; }
   .hm-map-shell .leaflet-popup-content { max-width:200px; }
