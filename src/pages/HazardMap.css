@@ -9,6 +9,9 @@
 .hm-kicker { display:block; color:var(--accent); font-size:11px; font-weight:850; letter-spacing:.16em; text-transform:uppercase; margin-bottom:7px; }
 .hm-hero h1 { margin:0 0 8px; font-size:var(--page-title-size); line-height:1.1; letter-spacing:0; }
 .hm-hero p { margin:0; color:var(--text-secondary); font-size:13px; line-height:1.6; max-width:520px; }
+.hm-scroll-map-button { display:inline-flex; align-items:center; gap:7px; min-height:36px; margin-top:14px; padding:7px 12px; border:1px solid rgba(250,204,21,.35); border-radius:10px; background:rgba(250,204,21,.1); color:var(--accent); font:inherit; font-size:11px; font-weight:800; cursor:pointer; transition:var(--transition); }
+.hm-scroll-map-button:hover { background:rgba(250,204,21,.18); border-color:var(--accent); }
+.hm-scroll-map-button span { font-size:16px; line-height:1; }
 .hm-hero-icon { position:relative; z-index:1; flex:0 0 58px; width:58px; height:58px; display:grid; place-items:center; border-radius:17px; background:rgba(250,204,21,.1); border:1px solid rgba(250,204,21,.35); box-shadow:0 0 28px rgba(250,204,21,.12); }
 .hm-hero-icon img { width:32px; height:32px; object-fit:contain; }
 
