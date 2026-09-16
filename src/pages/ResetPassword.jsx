@@ -31,7 +31,7 @@ export default function ResetPassword() {
       } = supabase.auth.onAuthStateChange((event, session) => {
         if (!mounted) return
 
-        if (event === 'PASSWORD_RECOVERY' && session) {
+        if ((event === 'PASSWORD_RECOVERY' || event === 'INITIAL_SESSION') && session) {
           setReady(true)
           setChecking(false)
         }
@@ -39,17 +39,45 @@ export default function ResetPassword() {
       subscription = authSubscription
 
       try {
+        const callbackUrl = new URL(window.location.href)
+        const hashParams = new URLSearchParams(callbackUrl.hash.slice(1))
+        const callbackError = callbackUrl.searchParams.get('error_description')
+          || callbackUrl.searchParams.get('error')
+          || hashParams.get('error_description')
+          || hashParams.get('error')
+
+        if (callbackError) {
+          setError(callbackError)
+          setChecking(false)
+          return
+        }
+
+        const code = callbackUrl.searchParams.get('code')
+        if (code) {
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+          if (exchangeError) {
+            throw exchangeError
+          }
+          callbackUrl.searchParams.delete('code')
+          window.history.replaceState({}, document.title, callbackUrl.toString())
+        }
+
         const {
           data: { session },
         } = await supabase.auth.getSession()
 
         if (!mounted) return
 
-        if (session) setReady(true)
+        if (session) {
+          setReady(true)
+        } else {
+          setError('Link reset tidak valid atau sudah kedaluwarsa. Minta link reset baru lalu coba lagi.')
+        }
 
         setChecking(false)
-      } catch {
+      } catch (err) {
         if (!mounted) return
+        console.error('Recovery session error:', err)
         setError('Tautan pengaturan ulang tidak dapat digunakan. Minta tautan baru lalu coba lagi.')
         setChecking(false)
       }
