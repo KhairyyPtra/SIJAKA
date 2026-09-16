@@ -225,7 +225,7 @@ export default function Navbar() {
     return link
   })
   const links = !loading && ['admin', 'community'].includes(role)
-    ? [...guestLinks, { path: role === 'community' ? '/community' : '/admin', label: role === 'community' ? 'Komunitas' : 'Instansi', icon: '/icons/admin.svg?v=sijaka5' }]
+    ? [...guestLinks, { path: role === 'community' ? '/community' : '/admin', label: role === 'community' ? 'Relawan' : 'Instansi', icon: '/icons/admin.svg?v=sijaka5' }]
     : guestLinks.map((link) => {
         if (link.path === '/my-reports' && user) return { ...link, label: 'Laporan Saya' }
         if (link.path === '/history' && user) return { ...link, label: 'Riwayat Saya' }
