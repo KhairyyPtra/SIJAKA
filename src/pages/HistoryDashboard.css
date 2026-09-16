@@ -374,18 +374,59 @@
 
 @media (max-width: 760px) {
   .history-content {
-    padding: 18px 14px 78px;
+    padding: 14px 14px 78px;
   }
 
   .history-hero {
-    padding: 22px 18px;
+    min-height: 0;
+    padding: 18px 18px;
+    gap: 14px;
+  }
+
+  .history-hero h1 {
+    margin-bottom: 6px;
+    font-size: clamp(26px, 8vw, 34px);
+  }
+
+  .history-hero p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .history-hero > img {
+    width: 48px;
+    height: 48px;
+    padding: 10px;
   }
 
   .history-stats-strip {
+    gap: 10px;
+    margin-top: 16px;
     grid-template-columns: repeat(2, minmax(120px, 1fr));
   }
 
+  .history-stat {
+    min-height: 86px;
+    padding: 14px;
+  }
+
+  .history-filter-panel {
+    align-items: flex-start;
+    margin-top: 18px;
+    padding: 14px;
+  }
+
+  .history-filter-group {
+    width: 100%;
+  }
+
+  .history-filter-group button {
+    flex: 1 1 auto;
+  }
+
   .history-card {
+    gap: 12px;
+    padding: 15px;
     grid-template-columns: 1fr;
   }
 

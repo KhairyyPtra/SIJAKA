@@ -72,12 +72,16 @@
 .my-reports-empty p { margin:0 0 18px; color:var(--text-secondary); font-size:13px; }
 .my-reports-primary { background:var(--gradient-primary); color:#fff; }
 @media (max-width:560px) {
-  .my-reports-content { padding:18px 14px 78px; }
-  .my-reports-hero { min-height:140px; padding:22px 20px; border-radius:20px; }
+  .my-reports-content { padding:14px 14px 78px; }
+  .my-reports-hero { min-height:0; padding:18px 18px; border-radius:18px; }
   .my-reports-hero > img { display:none; }
   .my-reports-hero h1 { font-size:var(--page-title-size-mobile); }
-  .my-reports-hero p { font-size:12px; }
+  .my-reports-hero p { font-size:12px; line-height:1.5; }
+  .my-reports-list { margin-top:18px; }
+  .my-reports-list-heading { align-items:flex-start; flex-direction:column; gap:9px; }
   .my-reports-list-heading h2 { font-size:14px; }
+  .my-reports-actions { width:100%; gap:7px; }
+  .my-reports-actions a { flex:1 1 0; }
   .my-report-card { grid-template-columns:38px minmax(0,1fr); align-items:flex-start; padding:12px; }
   .my-report-actions { grid-column:2; width:100%; justify-content:flex-start; margin-top:2px; }
   .my-report-map-link { width:38px; height:38px; }

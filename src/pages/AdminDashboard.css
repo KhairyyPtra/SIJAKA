@@ -32,6 +32,11 @@
 .ad-stat strong { font-size:26px; line-height:1; letter-spacing:-.03em; }
 .ad-stat span { color:var(--text-secondary); font-size:9.5px; font-weight:800; letter-spacing:.07em; text-align:center; }
 .ad-ai-panel { display:flex; align-items:center; gap:14px; padding:16px 18px; border:1px solid #c8ddda; border-radius:var(--radius-panel); background:#eef6f5; box-shadow:none; }.ad-ai-panel.perhatian { border-color:#e2c98d; }.ad-ai-panel.tinggi { border-color:#e3aaa5; background:#fff4f3; }.ad-ai-badge { display:grid; place-items:center; flex:0 0 42px; width:42px; height:42px; border-radius:8px; background:var(--accent); color:#fff; font-size:11px; font-weight:950; }.ad-ai-copy { min-width:0; flex:1; }.ad-ai-copy > span { color:var(--accent); font-size:9px; font-weight:850; letter-spacing:.13em; }.ad-ai-copy strong { display:block; margin:3px 0; font-size:14px; }.ad-ai-copy p { margin:0; color:var(--text-secondary); font-size:12px; line-height:1.45; }.ad-ai-focus { display:flex; flex-direction:column; gap:3px; min-width:135px; padding-left:14px; border-left:1px solid var(--border-color); }.ad-ai-focus small { color:var(--text-muted); font-size:9px; font-weight:800; letter-spacing:.08em; }.ad-ai-focus b { color:var(--text-primary); font-size:12px; }
+.ad-ai-panel .ad-ai-copy strong,
+.ad-ai-panel .ad-ai-focus b { color:#19332f; }
+.ad-ai-panel .ad-ai-copy p { color:#47645e; }
+.ad-ai-panel .ad-ai-focus { border-color:rgba(25,51,47,.2); }
+.ad-ai-panel .ad-ai-focus small { color:#5b706b; }
 
 .ad-filters-panel { border:1px solid var(--border-color); border-radius:var(--radius-panel); background:var(--bg-card); padding:15px 17px; box-shadow:none; }
 .ad-filters-label { display:block; color:var(--text-muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:11px; }
@@ -218,3 +223,12 @@
 @media (max-width:430px) {
   .ad-stats-strip { gap:0; }
 }
+
+html[data-theme='dark'] .ad-ai-panel { background:#202629; border-color:#354044; }
+html[data-theme='dark'] .ad-ai-panel.perhatian { background:#302d20; border-color:#665b32; }
+html[data-theme='dark'] .ad-ai-panel.tinggi { background:#302322; border-color:#68413d; }
+html[data-theme='dark'] .ad-ai-panel .ad-ai-copy strong,
+html[data-theme='dark'] .ad-ai-panel .ad-ai-focus b { color:#f2f4f3; }
+html[data-theme='dark'] .ad-ai-panel .ad-ai-copy p { color:#b9c2c1; }
+html[data-theme='dark'] .ad-ai-panel .ad-ai-focus { border-color:#354044; }
+html[data-theme='dark'] .ad-ai-panel .ad-ai-focus small { color:#8d9a9b; }
