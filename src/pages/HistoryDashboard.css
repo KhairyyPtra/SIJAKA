@@ -407,6 +407,8 @@
 
   .history-stat:first-child {
     grid-column: 1 / -1;
+    align-items: center;
+    text-align: center;
   }
 
   .history-stat {
