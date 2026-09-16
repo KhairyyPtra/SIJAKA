@@ -6,8 +6,6 @@ import AdminRoute from './components/AdminRoute'
 import './App.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import PlatformShell from './components/PlatformShell'
-import AdminDashboard from './pages/AdminDashboard'
-import Settings from './pages/Settings'
 import { applyAppSettings, getAppSettings } from './lib/appSettings'
 import { supabaseConfigError } from './lib/supabaseclient'
 
@@ -19,6 +17,8 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const HazardMap = lazy(() => import('./pages/HazardMap'))
 const ReportForm = lazy(() => import('./pages/ReportForm'))
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+const Settings = lazy(() => import('./pages/Settings'))
 
 const Profile = lazy(() => import('./pages/Profile'))
 const MyReports = lazy(() => import('./pages/MyReports'))

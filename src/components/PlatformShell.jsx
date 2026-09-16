@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
@@ -23,7 +23,7 @@ export default function PlatformShell({ children }) {
   const { role } = useAuth()
   const [online, setOnline] = useState(() => navigator.onLine)
   const [runtimeError, setRuntimeError] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
+  const refreshingRef = useRef(false)
   const [notification, setNotification] = useState(null)
   const roleMessages = role === 'admin'
     ? {
@@ -123,8 +123,8 @@ export default function PlatformShell({ children }) {
       if (!tracking) return
       tracking = false
       const distance = event.changedTouches[0].clientY - startY
-      if (distance < 88 || !navigator.onLine || refreshing) return
-      setRefreshing(true)
+      if (distance < 88 || !navigator.onLine || refreshingRef.current) return
+      refreshingRef.current = true
       window.location.reload()
     }
 
@@ -134,7 +134,7 @@ export default function PlatformShell({ children }) {
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [refreshing])
+  }, [])
 
   return (
     <div className={`platform-role-shell role-${role || 'guest'}`} data-role={role || 'guest'}>

@@ -32,7 +32,11 @@
 
 .pf-loading { text-align:center; color:var(--text-secondary); padding:44px 0; }
 .pf-section-label { padding:8px 2px 0; color:var(--accent); font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
-.pf-settings-link { display:flex; align-items:center; justify-content:space-between; min-height:50px; padding:11px 14px; border:1px solid var(--border-color); border-radius:12px; background:var(--bg-card); color:var(--accent); font-size:13px; font-weight:850; text-decoration:none; }.pf-settings-link:hover { border-color:var(--accent); background:rgba(15,118,110,.06); }
+.pf-settings-link { display:flex; align-items:center; justify-content:space-between; min-height:54px; padding:11px 12px 11px 16px; border:1px solid color-mix(in srgb, var(--accent) 42%, var(--border-color)); border-left:4px solid var(--accent); border-radius:12px; background:color-mix(in srgb, var(--accent) 10%, var(--bg-card)); color:var(--text-primary); font-size:13px; font-weight:850; text-decoration:none; box-shadow:0 6px 16px color-mix(in srgb, var(--accent) 12%, transparent); transition:var(--transition); }
+.pf-settings-link > span { display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff; font-size:17px; line-height:1; transition:var(--transition); }
+.pf-settings-link:hover { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, var(--bg-card)); transform:translateY(-1px); box-shadow:0 9px 20px color-mix(in srgb, var(--accent) 18%, transparent); }
+.pf-settings-link:hover > span { transform:translateX(2px); }
+.pf-settings-link:focus-visible { outline:3px solid color-mix(in srgb, var(--accent) 30%, transparent); outline-offset:2px; }
 
 .pf-panel { border:1px solid var(--border-color); border-radius:var(--radius-panel); background:var(--surface-panel); box-shadow:var(--shadow-card); backdrop-filter:blur(12px) saturate(115%); -webkit-backdrop-filter:blur(12px) saturate(115%); overflow:hidden; content-visibility:auto; contain-intrinsic-size:180px; }
 .pf-panel-head { display:flex; align-items:center; gap:10px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.055); }

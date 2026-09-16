@@ -168,8 +168,6 @@ html[data-data-saver='true'] .rf-photo-preview, html[data-data-saver='true'] .pf
   content-visibility: auto;
 }
 
-html[data-theme='dark'] .navbar-shell,
-html[data-theme='dark'] .mobile-bottom-nav { background:rgba(16,25,28,.96); }
 html[data-theme='dark'] .navbar-links { background:#18272b; }
 html[data-theme='dark'] .navbar-link:hover, html[data-theme='dark'] .navbar-login-link:hover { background:#24393d; }
 html[data-theme='dark'] .navbar-guest-popup, html[data-theme='dark'] .sijaka-toast { background:#1c2a2e; color:var(--text-primary); }

@@ -1285,6 +1285,17 @@ export default function HazardMap() {
               placeholder="Cari lokasi, jalan, atau area..."
               aria-label="Cari lokasi"
             />
+            {locationSearch && (
+              <button
+                type="button"
+                className="hm-location-search-clear"
+                onClick={() => setLocationSearch('')}
+                aria-label="Hapus pencarian lokasi"
+                title="Hapus pencarian"
+              >
+                ×
+              </button>
+            )}
             <button type="submit" disabled={locationSearchLoading}>
               {locationSearchLoading ? 'Mencari...' : 'Cari'}
             </button>
@@ -1578,7 +1589,8 @@ export default function HazardMap() {
                               }
                               closeButton
                               closeOnClick={false}
-                              autoPan={false}
+                              autoPan
+                              autoPanPadding={[24, 72]}
                               eventHandlers={{
                                 popupopen: () => setActiveMarkerId(report.id),
                                 popupclose: () => setActiveMarkerId((currentId) => currentId === report.id ? null : currentId),

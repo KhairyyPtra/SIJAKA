@@ -372,6 +372,8 @@
   text-decoration: none;
 }
 
+.history-staff .history-card-top h3 { display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+
 @media (max-width: 760px) {
   .history-content {
     padding: 14px 14px 78px;
@@ -448,4 +450,32 @@
   .history-detail-grid {
     grid-template-columns: 1fr;
   }
+
+  .history-staff .history-hero p { display:none; }
+  .history-staff .history-hero { padding:15px 16px; }
+  .history-staff .history-hero > img { display:none; }
+  .history-staff .history-stats-strip { gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .history-staff .history-stat:first-child { grid-column:auto; }
+  .history-staff .history-stat { min-height:64px; padding:9px 5px; border-radius:11px; align-items:center; text-align:center; }
+  .history-staff .history-stat strong { font-size:20px; }
+  .history-staff .history-stat span { font-size:8px; letter-spacing:.03em; }
+  .history-staff .history-stat::before { width:7px; height:7px; box-shadow:0 0 0 3px color-mix(in srgb, var(--history-dot-color, var(--accent)) 18%, transparent); }
+  .history-staff .history-filter-panel { gap:8px; margin-top:12px; padding:10px; }
+  .history-staff .history-filter-label { font-size:10px; }
+  .history-staff .history-filter-group { display:flex; gap:5px; overflow-x:auto; flex-wrap:nowrap; }
+  .history-staff .history-filter-group button { flex:0 0 auto; min-height:32px; padding:6px 9px; font-size:10px; }
+  .history-staff .history-list { gap:8px; margin-top:12px; }
+  .history-staff .history-card { grid-template-columns:34px minmax(0,1fr) auto; gap:9px; padding:10px; border-radius:12px; }
+  .history-staff .history-card-icon { width:34px; height:34px; border-radius:9px; }
+  .history-staff .history-card-icon img { width:19px; height:19px; }
+  .history-staff .history-card-top { flex-direction:row; align-items:flex-start; gap:6px; }
+  .history-staff .history-card-type { margin-bottom:2px; font-size:9px; }
+  .history-staff .history-card-top h3 { font-size:12px; line-height:1.3; }
+  .history-staff .history-status-badge { min-width:0; min-height:24px; padding:5px 6px; font-size:8px; }
+  .history-staff .history-meta-list { gap:3px 8px; margin-top:6px; font-size:9px; }
+  .history-staff .history-detail-grid { display:none; }
+  .history-staff .history-note { margin-top:7px; padding:7px 8px; }
+  .history-staff .history-note strong, .history-staff .history-note span { font-size:9px; }
+  .history-staff .history-map-button { width:32px; height:32px; border-radius:9px; }
+  .history-staff .history-map-button img { width:15px; height:15px; }
 }

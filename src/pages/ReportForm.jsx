@@ -32,6 +32,7 @@ export default function ReportForm() {
   const [locationStatus, setLocationStatus] = useState('idle')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [duplicateWarning, setDuplicateWarning] = useState(null)
   const [duplicateConfirmed, setDuplicateConfirmed] = useState(false)
   const [queuedCount, setQueuedCount] = useState(0)
@@ -43,12 +44,34 @@ export default function ReportForm() {
   const streamRef = useRef(null)
   const locationWatchRef = useRef(null)
   const canvasRef = useRef(null)
+  const damageSectionRef = useRef(null)
+  const damageToggleRef = useRef(null)
+  const descriptionSectionRef = useRef(null)
+  const descriptionRef = useRef(null)
+  const locationSectionRef = useRef(null)
   const mountedRef = useRef(true)
   const navigationTimerRef = useRef(null)
 
   const { user, fullName } = useAuth()
   const navigate = useNavigate()
   const selectedDamage = damageType ? DAMAGE_TYPES[damageType] : null
+
+  const clearFieldError = (field) => {
+    setFieldErrors((current) => {
+      if (!current[field]) return current
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
+
+  const showFieldError = (field, message, targetRef, focusRef) => {
+    setFieldErrors({ [field]: message })
+    window.requestAnimationFrame(() => {
+      targetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      focusRef?.current?.focus({ preventScroll: true })
+    })
+  }
 
   const flushQueuedReports = useCallback(async () => {
     if (!user?.id || !navigator.onLine) return
@@ -206,19 +229,20 @@ export default function ReportForm() {
   function getLocation() {
     if (!getAppSettings().locationAccess) {
       setLocationStatus('error')
-      setError('Akses lokasi sedang dimatikan. Aktifkan melalui Pengaturan Aplikasi untuk menandai lokasi laporan.')
+      setFieldErrors({ location: 'Akses lokasi sedang dimatikan. Aktifkan melalui Pengaturan Aplikasi untuk menandai lokasi laporan.' })
       return
     }
     setLocationStatus('loading')
     setError('')
+    clearFieldError('location')
 
     if (!navigator.geolocation) {
-      setError('Perangkat ini belum mendukung penentuan lokasi otomatis.')
+      setFieldErrors({ location: 'Perangkat ini belum mendukung penentuan lokasi otomatis.' })
       setLocationStatus('error')
       return
     }
     if (!window.isSecureContext) {
-      setError('Penentuan lokasi membutuhkan koneksi aman. Buka aplikasi melalui HTTPS.')
+      setFieldErrors({ location: 'Penentuan lokasi membutuhkan koneksi aman. Buka aplikasi melalui HTTPS.' })
       setLocationStatus('error')
       return
     }
@@ -238,12 +262,13 @@ export default function ReportForm() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         })
+        clearFieldError('location')
         setLocationAccuracy(position.coords.accuracy ?? null)
         setLocationStatus('success')
       },
       () => {
         if (!mountedRef.current) return
-        setError('Lokasi belum ditemukan. Pastikan izin lokasi aktif, lalu coba lagi.')
+        setFieldErrors({ location: 'Lokasi belum ditemukan. Pastikan izin lokasi aktif, lalu coba lagi.' })
         setLocationStatus('error')
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
@@ -253,19 +278,20 @@ export default function ReportForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
 
     if (!location) {
-      setError('Tentukan lokasi kejadian terlebih dahulu sebelum mengirim laporan.')
+      showFieldError('location', 'Tentukan lokasi kejadian terlebih dahulu sebelum mengirim laporan.', locationSectionRef)
       return
     }
     if (!damageType) {
-      setError('Pilih jenis kerusakan terlebih dahulu.')
+      showFieldError('damage', 'Pilih jenis kerusakan terlebih dahulu.', damageSectionRef, damageToggleRef)
       setIsDamageDrawerOpen(true)
       return
     }
     const trimmedDescription = description.trim()
     if (trimmedDescription.length < 10) {
-      setError('Deskripsi minimal 10 karakter agar laporan mudah ditindaklanjuti.')
+      showFieldError('description', 'Deskripsi minimal 10 karakter agar laporan mudah ditindaklanjuti.', descriptionSectionRef, descriptionRef)
       return
     }
     if (!user?.id) {
@@ -438,7 +464,7 @@ export default function ReportForm() {
 
         <form onSubmit={handleSubmit} className="rf-flow">
           {}
-          <div className="rf-panel">
+          <div className="rf-panel" ref={damageSectionRef}>
             <div className="rf-panel-head">
               <span className="rf-step-marker">1</span>
               <div className="rf-panel-head-copy">
@@ -499,9 +525,12 @@ export default function ReportForm() {
             </div>
 
             <div className="rf-panel-body">
+              {fieldErrors.damage && <div className="rf-field-error" role="alert">{fieldErrors.damage}</div>}
               <button
                 type="button"
+                ref={damageToggleRef}
                 className={`rf-damage-toggle ${isDamageDrawerOpen ? 'active' : ''} ${!selectedDamage ? 'placeholder' : ''}`}
+                aria-invalid={Boolean(fieldErrors.damage)}
                 aria-expanded={isDamageDrawerOpen}
                 aria-controls="damage-options"
                 onClick={() => setIsDamageDrawerOpen((previous) => !previous)}
@@ -525,6 +554,7 @@ export default function ReportForm() {
                       className={`rf-damage-tile ${damageType === opt.value ? 'active' : ''}`}
                       onClick={() => {
                         setDamageType(opt.value)
+                        clearFieldError('damage')
                         setDuplicateWarning(null)
                         setDuplicateConfirmed(false)
                         setIsDamageDrawerOpen(false)
@@ -541,7 +571,7 @@ export default function ReportForm() {
             </div>
           </div>
 
-          <div className="rf-panel">
+          <div className="rf-panel" ref={descriptionSectionRef}>
             <div className="rf-panel-head">
               <span className="rf-step-marker">3</span>
               <div className="rf-panel-head-copy">
@@ -552,14 +582,16 @@ export default function ReportForm() {
 
             <div className="rf-panel-body">
               <div className="rf-description-field">
+                {fieldErrors.description && <div className="rf-field-error" role="alert">{fieldErrors.description}</div>}
                 <textarea
                   id="report-description"
+                  ref={descriptionRef}
                   value={description}
-                  onChange={(event) => setDescription(event.target.value.slice(0, 500))}
+                  aria-invalid={Boolean(fieldErrors.description)}
+                  onChange={(event) => { setDescription(event.target.value.slice(0, 500)); clearFieldError('description') }}
                   placeholder="Contoh: Lubang besar di depan halte, sekitar 1 meter, cukup mengganggu kendaraan saat malam."
                   maxLength={500}
                   rows={5}
-                  required
                 />
                 <div className="rf-description-meta">
                   <span>Minimal 10 karakter</span>
@@ -569,7 +601,7 @@ export default function ReportForm() {
             </div>
           </div>
 
-          <div className="rf-panel">
+          <div className="rf-panel" ref={locationSectionRef}>
             <div className="rf-panel-head">
               <span className="rf-step-marker">4</span>
               <div className="rf-panel-head-copy">
@@ -580,6 +612,7 @@ export default function ReportForm() {
             </div>
 
             <div className="rf-panel-body">
+              {fieldErrors.location && <div className="rf-field-error" role="alert">{fieldErrors.location}</div>}
               {locationStatus === 'idle' && (
                 <div className="rf-location-card">
                   <div className="rf-location-icon"><img src="/icons/peta.svg" alt="" /></div>

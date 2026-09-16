@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/useAuth'
 import { getAccountInitials } from '../lib/avatar'
+import { DAMAGE_TYPES } from '../lib/damageTypes'
 import { supabase } from '../lib/supabaseclient'
 import { getAppSettings } from '../lib/appSettings'
 import './Navbar.css'
@@ -38,12 +39,26 @@ function formatNotificationDate(value) {
 }
 
 function notificationText(report, role, previousStatus) {
+  const damageLabel = DAMAGE_TYPES[report.damage_type]?.label || 'Kerusakan Jalan'
   if (role === 'admin' || role === 'community') {
     return previousStatus
-      ? `Laporan ${report.damage_type || 'jalan'} berubah menjadi ${report.status}.`
-      : `Laporan baru masuk: ${report.damage_type || 'kerusakan jalan'}.`
+      ? `Laporan ${damageLabel} berubah menjadi ${report.status}.`
+      : `Laporan baru masuk: ${damageLabel}.`
   }
   return `Status laporan Anda berubah menjadi ${report.status}.`
+}
+
+function normalizeNotification(item) {
+  const message = String(item?.message || '')
+  const damageType = item?.damageType || Object.keys(DAMAGE_TYPES).find((key) => message.toLowerCase().includes(key))
+  const damageLabel = damageType ? DAMAGE_TYPES[damageType]?.label : null
+  return {
+    ...item,
+    damageType: damageType || item?.damageType || null,
+    message: damageLabel
+      ? message.replace(new RegExp(`\\b${damageType}\\b`, 'i'), damageLabel)
+      : message,
+  }
 }
 
 export default function Navbar() {
@@ -59,6 +74,7 @@ export default function Navbar() {
   const snapshotRef = useRef({})
   const notificationKeyRef = useRef('')
   const dragStartRef = useRef({ id: null, x: 0 })
+  const guestNoticeTimerRef = useRef(null)
   const userAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.avatarUrl || ''
   const userInitials = getAccountInitials(fullName || user?.user_metadata?.full_name, user?.email)
 
@@ -71,7 +87,9 @@ export default function Navbar() {
     const key = notificationKey(user.id)
     const stateKey = snapshotKey(user.id, role)
     notificationKeyRef.current = key
-    setNotifications(readJson(key, []))
+    const storedNotifications = readJson(key, []).map(normalizeNotification)
+    setNotifications(storedNotifications)
+    window.localStorage.setItem(key, JSON.stringify(storedNotifications))
     snapshotRef.current = readJson(stateKey, {})
     let active = true
 
@@ -91,6 +109,7 @@ export default function Navbar() {
         reportId: report.id,
         title: role === 'admin' || role === 'community' ? (previousStatus ? 'Pembaruan laporan' : 'Laporan baru masuk') : 'Pembaruan laporan',
         message: notificationText(report, role, previousStatus),
+        damageType: report.damage_type || null,
         createdAt: new Date().toISOString(),
         read: false,
       }, ...current]
@@ -197,12 +216,16 @@ export default function Navbar() {
       setGuestNotice(true)
     }
     window.addEventListener('sijaka:guest-report', showGuestNotice)
-    return () => window.removeEventListener('sijaka:guest-report', showGuestNotice)
+    return () => {
+      window.removeEventListener('sijaka:guest-report', showGuestNotice)
+      window.clearTimeout(guestNoticeTimerRef.current)
+    }
   }, [])
 
   const closeGuestNotice = () => {
     setGuestNoticeClosing(true)
-    window.setTimeout(() => {
+    window.clearTimeout(guestNoticeTimerRef.current)
+    guestNoticeTimerRef.current = window.setTimeout(() => {
       setGuestNotice(false)
       setGuestNoticeClosing(false)
     }, 220)
@@ -324,10 +347,16 @@ export default function Navbar() {
                       onClick={() => {
                         if (swipeState.id === item.id && swipeState.offset !== 0) return
                         setInboxOpen(false)
-                        navigate(role === 'admin' ? '/admin' : role === 'community' ? '/community' : '/my-reports')
+                        navigate(role === 'admin' ? `/admin?refresh=${Date.now()}` : role === 'community' ? '/community' : '/my-reports')
                       }}
                     >
-                      <span className="navbar-inbox-dot" aria-hidden="true" />
+                      {item.damageType && DAMAGE_TYPES[item.damageType]?.icon ? (
+                        <span className="navbar-inbox-icon" aria-hidden="true">
+                          <img src={DAMAGE_TYPES[item.damageType].icon} alt="" />
+                        </span>
+                      ) : (
+                        <span className="navbar-inbox-dot" aria-hidden="true" />
+                      )}
                       <span><strong>{item.title}</strong><small>{item.message}</small><time>{formatNotificationDate(item.createdAt)}</time></span>
                     </button>
                   </div>

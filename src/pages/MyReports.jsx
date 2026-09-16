@@ -229,8 +229,8 @@ export default function MyReports() {
             <div className="my-reports-list-heading">
               <h2>{reports.length} Laporan</h2>
               <div className="my-reports-actions">
-                <Link to="/history" className="my-reports-secondary">Riwayat</Link>
-                <Link to="/report" className="my-reports-secondary">+ Laporan baru</Link>
+                <Link to="/history" className="my-reports-secondary my-reports-history-link">Riwayat</Link>
+                <Link to="/report" className="my-reports-secondary my-reports-new-link">+ Laporan baru</Link>
               </div>
             </div>
             {reports.map((report) => {

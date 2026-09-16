@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getPriorityScore, getReportInsight } from '../lib/aiInsights'
 import { DAMAGE_TYPES } from '../lib/damageTypes'
 import { supabase } from '../lib/supabaseclient'
@@ -69,6 +69,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('semua')
   const [damageFilter, setDamageFilter] = useState('semua')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [updatingId, setUpdatingId] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
   const [fetchNote, setFetchNote] = useState('')
@@ -84,6 +86,7 @@ export default function AdminDashboard() {
   const [deleteReason, setDeleteReason] = useState('')
   const [deleteSubmitting, setDeleteSubmitting] = useState(false)
   const completionFlowActive = useRef(false)
+  const location = useLocation()
 
   const fetchReports = async () => {
     setLoading(true)
@@ -179,36 +182,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchReports()
 
-    const refreshTimer = window.setInterval(() => {
-      if (!completionFlowActive.current) fetchReports()
-    }, 15000)
-    const refreshWhenActive = () => {
-      if (!document.hidden && !completionFlowActive.current) fetchReports()
-    }
-    const refreshWhenOnline = () => {
-      if (!completionFlowActive.current) fetchReports()
-    }
-    document.addEventListener('visibilitychange', refreshWhenActive)
-    window.addEventListener('focus', refreshWhenActive)
-    window.addEventListener('online', refreshWhenOnline)
-    const reportsChannel = supabase
-      .channel('admin-reports-updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'reports' },
-        () => fetchReports()
-      )
-      .subscribe()
-
     return () => {
-      window.clearInterval(refreshTimer)
       completionFlowActive.current = false
-      document.removeEventListener('visibilitychange', refreshWhenActive)
-      window.removeEventListener('focus', refreshWhenActive)
-      window.removeEventListener('online', refreshWhenOnline)
-      supabase.removeChannel(reportsChannel)
     }
-  }, [])
+  }, [location.search])
 
   useEffect(() => () => {
     if (completionPreview) URL.revokeObjectURL(completionPreview)
@@ -585,12 +562,60 @@ export default function AdminDashboard() {
     navigate(`/map?${params.toString()}`)
   }
 
+  const normalizedSearch = searchQuery.trim().toLowerCase()
   const filteredReports = reports.filter((r) => {
     const statusMatch = statusFilter === 'semua' || r.status === statusFilter
     const damageMatch =
       damageFilter === 'semua' || r.damage_type === damageFilter
-    return statusMatch && damageMatch
+    const reporter = r.reporter || pickReporter(r)
+    const searchable = [
+      r.id,
+      r.description,
+      r.status,
+      r.damage_type,
+      damageMeta[r.damage_type]?.label,
+      reporter.name,
+      reporter.email,
+      r.latitude,
+      r.longitude,
+    ].filter(Boolean).join(' ').toLowerCase()
+    return statusMatch && damageMatch && (!normalizedSearch || searchable.includes(normalizedSearch))
   })
+
+  const exportReports = async () => {
+    if (!filteredReports.length) return
+    const XLSX = await import('xlsx')
+    const rows = filteredReports.map((report) => {
+      const reporter = report.reporter || pickReporter(report)
+      return {
+        'ID Laporan': report.id,
+        'Kategori Kerusakan': damageMeta[report.damage_type]?.label || 'Kerusakan jalan',
+        'Kode Kategori': report.damage_type || '',
+        'Status': report.status || 'Diterima',
+        'Prioritas': getPriorityScore(report, voteCounts),
+        'Konfirmasi Warga': voteCounts[report.id] || 0,
+        'Pelapor': reporter.name || reporter.label,
+        'Email': reporter.email || '',
+        'Deskripsi': report.description || '',
+        'Latitude': Number.isFinite(Number(report.latitude)) ? Number(report.latitude) : '',
+        'Longitude': Number.isFinite(Number(report.longitude)) ? Number(report.longitude) : '',
+        'Dibuat': new Date(report.created_at).toLocaleString('id-ID'),
+        'Diperbarui': report.updated_at ? new Date(report.updated_at).toLocaleString('id-ID') : '',
+      }
+    })
+    const worksheet = XLSX.utils.json_to_sheet(rows)
+    const range = XLSX.utils.decode_range(worksheet['!ref'])
+    worksheet['!autofilter'] = { ref: XLSX.utils.encode_range(range) }
+    worksheet['!freeze'] = { xSplit: 0, ySplit: 1 }
+    worksheet['!cols'] = [
+      { wch: 38 }, { wch: 24 }, { wch: 16 }, { wch: 17 }, { wch: 11 },
+      { wch: 18 }, { wch: 26 }, { wch: 30 }, { wch: 52 }, { wch: 14 },
+      { wch: 14 }, { wch: 22 }, { wch: 22 },
+    ]
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan SIJAKA')
+    XLSX.writeFile(workbook, `laporan-sijaka-${new Date().toISOString().slice(0, 10)}.xlsx`)
+  }
 
   const stats = {
     total: reports.length,
@@ -600,6 +625,7 @@ export default function AdminDashboard() {
   }
   const insight = useMemo(() => getReportInsight(reports, voteCounts), [reports, voteCounts])
   const topPriority = useMemo(() => [...reports].sort((a, b) => getPriorityScore(b, voteCounts) - getPriorityScore(a, voteCounts))[0], [reports, voteCounts])
+  const activeFilterCount = Number(statusFilter !== 'semua') + Number(damageFilter !== 'semua')
 
   return (
     <div className={`ad-page ad-page-${role === 'community' ? 'community' : 'admin'}`}>
@@ -637,12 +663,32 @@ export default function AdminDashboard() {
           {topPriority && <div className="ad-ai-focus"><small>OBJEK PENANGANAN BERIKUTNYA</small><b>{damageMeta[topPriority.damage_type]?.label || 'Laporan jalan'}</b></div>}
         </section>
 
-        <div className="ad-filters-panel">
-          <span className="ad-filters-label">{role === 'community' ? 'Penyaringan temuan warga' : 'Penyaringan laporan'}</span>
-          <div className="ad-filters">
-            <Link to="/history" className="my-reports-secondary ad-history-link">Riwayat</Link>
+        <div className={`ad-filters-panel ${filtersOpen ? 'is-open' : ''}`}>
+          <div className="ad-filters-header">
+            <div>
+              <span className="ad-filters-label">{role === 'community' ? 'Penyaringan temuan warga' : 'Penyaringan laporan'}</span>
+              <p className="ad-filters-summary">
+                {activeFilterCount > 0 ? `${activeFilterCount} filter aktif` : 'Menampilkan semua laporan'}
+              </p>
+            </div>
+            <div className="ad-filters-header-actions">
+              <button
+                type="button"
+                className="ad-filter-toggle"
+                onClick={() => setFiltersOpen((open) => !open)}
+                aria-expanded={filtersOpen}
+                aria-controls="ad-filter-options"
+              >
+                <span>{filtersOpen ? 'Tutup filter' : 'Atur filter'}</span>
+                {activeFilterCount > 0 && <b>{activeFilterCount}</b>}
+                <span className="ad-filter-toggle-icon" aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="ad-filter-options" className="ad-filter-options" hidden={!filtersOpen}>
             <div className="ad-filter-group" role="group" aria-label="Saring berdasarkan status">
-              <span>Status</span>
+              <span>Status laporan</span>
               <div className="ad-filter-choices">
                 {['semua', ...STATUS_FLOW].map((value) => (
                   <button key={value} type="button" className={statusFilter === value ? 'active' : ''} onClick={() => setStatusFilter(value)} aria-pressed={statusFilter === value}>
@@ -660,18 +706,43 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
-
-            <button type="button" className="ad-refresh-btn" onClick={fetchReports}>
-              Muat ulang
-            </button>
+            <div className="ad-filter-footer">
+              <button type="button" className="ad-filter-reset" onClick={() => { setStatusFilter('semua'); setDamageFilter('semua') }} disabled={activeFilterCount === 0}>
+                Hapus pilihan
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div className="ad-admin-quick-actions">
+          <Link to="/history" className="ad-history-link">Riwayat laporan</Link>
+          <button type="button" className="ad-refresh-btn" onClick={fetchReports}>
+            ↻ Muat ulang data
+          </button>
+          <button type="button" className="ad-export-btn" onClick={exportReports} disabled={!filteredReports.length}>
+            ↓ Export Excel
+          </button>
+        </div>
+
+        <div className="ad-admin-toolbar">
+          <label className="ad-report-search">
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Cari ID, pelapor, jenis, atau lokasi..."
+              aria-label="Cari laporan"
+            />
+            {searchQuery && <button type="button" onClick={() => setSearchQuery('')} aria-label="Hapus pencarian">×</button>}
+          </label>
         </div>
 
         {loading ? (
           <p className="ad-loading">Memuat laporan...</p>
         ) : filteredReports.length === 0 ? (
           <p className="ad-loading">
-            Tidak ada laporan yang cocok dengan filter.
+            {searchQuery ? 'Tidak ada laporan yang cocok dengan pencarian.' : 'Tidak ada laporan yang cocok dengan filter.'}
           </p>
         ) : (
           <div className="ad-list">
@@ -681,7 +752,7 @@ export default function AdminDashboard() {
               const meta = damageMeta[report.damage_type] || damageMeta.lubang
 
               return (
-                <div key={report.id} className="ad-card">
+                <div key={report.id} className={`ad-card ${isExpanded ? 'is-expanded' : ''}`}>
                   {report.photo_url ? (
                     <img
                       src={report.photo_url}
@@ -760,12 +831,20 @@ export default function AdminDashboard() {
                       }
                     >
                       {isExpanded
-                        ? '▲ Sembunyikan detail pelapor'
-                        : '▼ Detail pelapor'}
+                        ? '▲ Sembunyikan detail lengkap'
+                        : '▼ Lihat detail lengkap'}
                     </button>
 
                     {isExpanded && (
                       <div className="ad-reporter-detail">
+                        <div className="ad-reporter-detail-row">
+                          <span className="ad-reporter-detail-label">Status</span>
+                          <span className="ad-reporter-detail-value">{report.status || 'Diterima'}</span>
+                        </div>
+                        <div className="ad-reporter-detail-row">
+                          <span className="ad-reporter-detail-label">Foto</span>
+                          <span className="ad-reporter-detail-value">{report.photo_url ? 'Foto laporan tersedia' : 'Tidak ada foto laporan'}</span>
+                        </div>
                         <div className="ad-reporter-detail-row">
                           <span className="ad-reporter-detail-label">Penanggung jawab</span>
                           <span className="ad-reporter-detail-value">
@@ -821,6 +900,12 @@ export default function AdminDashboard() {
                             {new Date(report.created_at).toLocaleString(
                               'id-ID'
                             )}
+                          </span>
+                        </div>
+                        <div className="ad-reporter-detail-row">
+                          <span className="ad-reporter-detail-label">Diperbarui</span>
+                          <span className="ad-reporter-detail-value">
+                            {report.updated_at ? new Date(report.updated_at).toLocaleString('id-ID') : 'Belum tersedia'}
                           </span>
                         </div>
                       </div>

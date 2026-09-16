@@ -141,7 +141,7 @@ export default function HistoryDashboard() {
   }
 
   return (
-    <div className="history-page">
+    <div className={`history-page ${isStaff ? 'history-staff' : ''}`}>
       <Navbar />
       <main className="history-content">
         <section className="history-hero">
