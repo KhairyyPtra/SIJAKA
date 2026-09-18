@@ -7,7 +7,13 @@ import './Auth.css'
 export default function VerifyOtp() {
   const location = useLocation()
   const navigate = useNavigate()
-  const emailFromState = location.state?.email || ''
+  const emailFromState = location.state?.email || (() => {
+    try {
+      return sessionStorage.getItem('sijaka-pending-signup-email') || ''
+    } catch {
+      return ''
+    }
+  })()
 
   const [email] = useState(emailFromState)
   const [otp, setOtp] = useState('')
@@ -22,6 +28,14 @@ export default function VerifyOtp() {
       navigate('/register', { replace: true })
     }
   }, [emailFromState, navigate])
+
+  useEffect(() => {
+    if (!email) return
+    try {
+      sessionStorage.setItem('sijaka-pending-signup-email', email)
+    } catch {
+    }
+  }, [email])
 
   useEffect(() => {
     if (cooldown <= 0) return
@@ -42,7 +56,13 @@ export default function VerifyOtp() {
     try {
       const { error } = await supabase.auth.verifyOtp({ email, token: otp.trim(), type: 'signup' })
       if (error) setError('Kode verifikasi belum sesuai. Periksa email Anda lalu coba lagi.')
-      else navigate('/dashboard')
+      else {
+        try {
+          sessionStorage.removeItem('sijaka-pending-signup-email')
+        } catch {
+        }
+        navigate('/dashboard')
+      }
     } catch {
       setError('Verifikasi belum berhasil. Coba lagi sebentar.')
     } finally {

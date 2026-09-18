@@ -4,6 +4,31 @@ import { useNavigate, Link } from 'react-router-dom'
 import { normalizeEmail, validateEmail, validatePassword, validateRequiredText } from '../lib/validation'
 import './Auth.css'
 
+function getRegisterErrorMessage(error) {
+  const message = String(error?.message || '').toLowerCase()
+
+  if (message.includes('already registered') || message.includes('already been registered')) {
+    return 'Email ini sudah terdaftar. Silakan masuk atau gunakan email lain.'
+  }
+  if (message.includes('password') && (message.includes('weak') || message.includes('6 characters'))) {
+    return 'Password terlalu lemah. Gunakan minimal 6 karakter.'
+  }
+  if (message.includes('invalid') && message.includes('email')) {
+    return 'Alamat email tidak valid.'
+  }
+  if (message.includes('database error')) {
+    return 'Pendaftaran gagal karena konfigurasi database belum siap. Hubungi administrator.'
+  }
+  if (message.includes('confirmation email') || message.includes('email provider')) {
+    return 'Akun belum dapat dibuat karena email konfirmasi gagal dikirim. Periksa konfigurasi SMTP Supabase atau coba lagi nanti.'
+  }
+  if (message.includes('fetch') || message.includes('network')) {
+    return 'Pendaftaran gagal karena koneksi. Periksa internet lalu coba lagi.'
+  }
+
+  return error?.message || 'Akun belum dapat dibuat. Periksa data Anda lalu coba lagi.'
+}
+
 export default function Register() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -35,8 +60,12 @@ export default function Register() {
     try {
       const { data, error } = await signUp(normalizedEmail, password, normalizedName)
       if (error) {
-        setError('Akun belum dapat dibuat. Periksa data Anda lalu coba lagi.')
+        setError(getRegisterErrorMessage(error))
       } else {
+        try {
+          sessionStorage.setItem('sijaka-pending-signup-email', normalizedEmail)
+        } catch {
+        }
         setSuccess(true)
         redirectTimer.current = setTimeout(() => {
           if (data?.session) {

@@ -42,6 +42,7 @@ Buat file `.env` di root project berdasarkan `.env.example`:
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_APP_URL=http://localhost:5173
 ```
 
 Jangan masukkan `service_role` key atau secret lain ke source code.
@@ -70,6 +71,7 @@ npm run preview
 2. Atur environment variables berikut pada Vercel:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_APP_URL` dengan URL production aplikasi
 3. Jalankan deployment dengan build command `npm run build`.
 4. Pastikan output directory menggunakan `dist`.
 5. Periksa konfigurasi redirect dan security header pada `vercel.json`.

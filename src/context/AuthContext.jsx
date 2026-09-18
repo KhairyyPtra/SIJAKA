@@ -84,14 +84,18 @@ export function AuthProvider({ children }) {
       if (!mounted) return
       setUser(session?.user ?? null)
       if (session?.user) {
-        queueMicrotask(() => fetchProfile(session.user.id))
+        setLoading(true)
+        queueMicrotask(async () => {
+          await fetchProfile(session.user.id)
+          if (mounted) setLoading(false)
+        })
       } else {
         ++profileRequest.current
         setRole(null)
         setFullName(null)
         setProfileError('')
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     return () => {

@@ -157,7 +157,8 @@ export default function ResetPassword() {
         {}
         {!checking && !ready && !success && (
           <div className="auth-error">
-            Link reset tidak valid atau sudah kedaluwarsa.
+            {error || 'Link reset tidak valid atau sudah kedaluwarsa.'}
+            <br />
             Silakan minta link reset baru.
           </div>
         )}
